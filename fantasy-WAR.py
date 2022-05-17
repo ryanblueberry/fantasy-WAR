@@ -35,7 +35,7 @@ class Settings:
             self.weeks=range(1,17)
         else:
             self.weeks=range(1,16)
-        self.league_id = 899513
+        self.league_id = 172
         self.ids = nfl.import_ids()
 
 class WAR(Settings):
