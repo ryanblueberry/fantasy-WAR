@@ -333,5 +333,5 @@ class WAR(Settings):
         plt.tight_layout()
         plt.show()
 
-a=WAR(2021, 1, 12, 1, 2, 2, 1, 1, 1, 1)
+
 
