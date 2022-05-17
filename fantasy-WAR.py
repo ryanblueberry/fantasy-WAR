@@ -156,7 +156,7 @@ class WAR(Settings):
         self._alldata=alldata
         return alldata
                     
-    def get_proj(self,Top):
+    def get_proj(self,Top=True):
         if isinstance(self._alldata,list):
             self.get_espn_data()
         posnum={'QB':self.teams*self.qb,'RB':self.teams*self.rb,
