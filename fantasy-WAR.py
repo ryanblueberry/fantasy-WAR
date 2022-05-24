@@ -69,6 +69,8 @@ class WAR(Settings):
                                   ]],on=['player_id','season'])
         fweek['fantasy_points_half']=((
             fweek['fantasy_points']+fweek['fantasy_points_ppr'])/2)
+        fweek=fweek.loc[(fweek['position']=='QB')|(fweek['position']=='RB')|
+                        (fweek['position']=='WR')|(fweek['position']=='TE')]
         self._fweek=fweek
         return fweek  
 
