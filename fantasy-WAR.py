@@ -10,10 +10,9 @@ from scipy.stats import norm
 import requests
 import pandas as pd
 import scipy
-#pip install espn_api
-#pip install nfl_data_py
+pip install espn_api
+pip install nfl_data_py
 import nfl_data_py as nfl
-import seaborn as sns
 import requests
 import time
 import json
