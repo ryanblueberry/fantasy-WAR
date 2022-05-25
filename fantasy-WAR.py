@@ -76,13 +76,7 @@ class WAR(Settings):
 ##########add outs so it doesnt go through process everytime   
     def get_espn_data(self):
         if isinstance(self._fweek,list):
-            self.get_week()      
-        slotcodes = {
-            0 : 'QB', 2 : 'RB', 4 : 'WR',
-            6 : 'TE', 7 : 'SFlex', 16: 'Def', 17: 'K',
-            20: 'Bench', 21: 'IR', 23: 'Flex'
-        }     
-              
+            self.get_week()                     
         url = "https://fantasy.espn.com/apis/v3/games/ffl/seasons/" + \
             str(self.season) + "/segments/0/leagues/" + str(self.league_id) + \
             "?view=kona_player_info" 
