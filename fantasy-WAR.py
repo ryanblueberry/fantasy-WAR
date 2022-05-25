@@ -10,8 +10,8 @@ from scipy.stats import norm
 import requests
 import pandas as pd
 import scipy
-pip install espn_api
-pip install nfl_data_py
+#pip install espn_api
+#pip install nfl_data_py
 import nfl_data_py as nfl
 import requests
 import time
@@ -19,7 +19,7 @@ import json
 
 
 class Settings:
-    def __init__(self,season,scoring,teams,qb,rb,wr,te,flex,k,dst):
+    def __init__(self,season,scoring,teams,qb,rb,wr,te,flex, sflex,k,dst):
         self.season=season
         self.scoring=scoring
         self.teams=teams
@@ -28,6 +28,7 @@ class Settings:
         self.wr=wr
         self.te=te
         self.flex=flex
+        self.sflex=sflex
         self.k=k
         self.dst=dst
         if self.season >= 2021:
@@ -38,8 +39,8 @@ class Settings:
         self.ids = nfl.import_ids()
 
 class WAR(Settings):
-    def __init__(self, season, scoring, teams, qb, rb, wr, te, flex, k, dst):
-        super().__init__(season, scoring, teams, qb, rb, wr, te, flex, k, dst)
+    def __init__(self, season, scoring, teams, qb, rb, wr, te, flex, sflex, k, dst):
+        super().__init__(season, scoring, teams, qb, rb, wr, te, flex,sflex, k, dst)
         self.ros=nfl.import_rosters(range(self.season,self.season+1))
         self.ros.dropna(subset=['player_id'],inplace=True)
         self._fweek = []
@@ -143,7 +144,8 @@ class WAR(Settings):
         alldata=pd.concat([data,dst])
         for col in ['fantasy_points','fantasy_points_half','fantasy_points_ppr']:
             alldata.loc[(alldata['position']=='K')|
-                    (alldata['position']=='DST'),col]=(
+                    (alldata['position']=='DST'),
+                    col]=(
                         alldata['actual'].loc[
                     (alldata['position']=='K')|
                     (alldata['position']=='DST')])
@@ -185,14 +187,33 @@ class WAR(Settings):
                     flex=pd.concat([flex,top])
             flex.sort_values(by='proj',ascending=False,inplace=True)
             flex['position']='FLEX'
-            flext=flex.iloc[0:24]
+            flext=flex.iloc[0:self.teams*self.flex]
             flext['top']=1
-            flexr=flex.iloc[24:48]
+            flexr=flex.iloc[self.teams*self.flex:(self.teams*self.flex)*2]
             flexr['top']=0
             tproj=pd.concat([tproj,flext])
             rproj=pd.concat([rproj,flexr])
+        for week in self.weeks:
+            w=self._alldata.loc[(self._alldata['week']==week)&(
+                self._alldata['season']==self.season)]
+            for pos in ['QB','WR','TE','RB']:
+                top=w.loc[w['position']==pos].sort_values(by='proj',
+                        ascending=False).iloc[posnum[pos]:(posnum[pos])*2]                                                            
+                if pos == 'QB':
+                    sflex=top
+                else:
+                    sflex=pd.concat([sflex,top])
+            sflex.sort_values(by='proj',ascending=False,inplace=True)
+            sflex['position']='SFLEX'
+            sflext=sflex.iloc[0:self.teams*self.sflex]
+            sflext['top']=1
+            sflexr=sflex.iloc[self.teams*self.sflex:(self.teams*self.sflex)*2]
+            sflexr['top']=0
+            tproj=pd.concat([tproj,sflext])
+            rproj=pd.concat([rproj,sflexr])
         self._tproj=tproj
         self._rproj=rproj
+            
         if Top == True:
             return tproj
         elif Top == False:
@@ -212,7 +233,7 @@ class WAR(Settings):
         rpos.columns=rpos.columns.to_flat_index().str.join('_')
         rpos.columns=['position','proj_mean','proj_std','fp_mean','fp_std']      
         pptm={'QB':self.qb,'RB':self.rb,'WR':self.wr,'TE':self.te,'FLEX':self.flex,
-              'K':self.k,'DST':self.dst}
+              "SFLEX":self.sflex,'K':self.k,'DST':self.dst}
         for pos in pptm.keys():
             tpos.loc[tpos['position']==pos, 'pts_mean'] = tpos['fp_mean']*pptm[pos]
             tpos.loc[tpos['position']==pos, 'pts_std'] = (((tpos['fp_std'])**2)*pptm[pos])
@@ -227,7 +248,8 @@ class WAR(Settings):
             (self._alldata['position'] == 'TE')|
             (self._alldata['position'] == 'K')|
             (self._alldata['position'] == 'DST')|
-            (self._alldata['position'] == 'FLEX')]
+            (self._alldata['position'] == 'FLEX')|
+            (self._alldata)['position'] == 'SFLEX']
         avetmscore=tpos['pts_mean'].sum()
         avetmstd=(tpos['pts_std'].sum())**(0.5)
         self._avetmscore=avetmscore
