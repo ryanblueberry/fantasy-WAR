@@ -191,8 +191,8 @@ class WAR(Settings):
             flexr['top']=0
             tproj=pd.concat([tproj,flext])
             rproj=pd.concat([rproj,flexr])
-            self._tproj=tproj
-            self._rproj=rproj
+        self._tproj=tproj
+        self._rproj=rproj
         if Top == True:
             return tproj
         elif Top == False:
