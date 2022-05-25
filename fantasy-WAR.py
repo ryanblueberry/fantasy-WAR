@@ -72,8 +72,7 @@ class WAR(Settings):
                         (fweek['position']=='WR')|(fweek['position']=='TE')]
         self._fweek=fweek
         return fweek  
-
-##########add outs so it doesnt go through process everytime   
+  
     def get_espn_data(self):
         if isinstance(self._fweek,list):
             self.get_week()                     
