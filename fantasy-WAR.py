@@ -249,7 +249,7 @@ class WAR(Settings):
             (self._alldata['position'] == 'K')|
             (self._alldata['position'] == 'DST')|
             (self._alldata['position'] == 'FLEX')|
-            (self._alldata)['position'] == 'SFLEX']
+            (self._alldata)['position'] == 'SFLEX')]
         avetmscore=tpos['pts_mean'].sum()
         avetmstd=(tpos['pts_std'].sum())**(0.5)
         self._avetmscore=avetmscore
